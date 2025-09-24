@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Y2S2_assignment2</string>
+
+
+    <string name="progress_format">Today: %1$d/%2$d (%3$d%%)</string>
+
+
+</resources>
+
+
