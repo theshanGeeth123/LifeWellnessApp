@@ -44,7 +44,11 @@ class HabitListFragment : Fragment() {
             onDelete = { habit ->
                 repo.deleteHabit(habit.id)
                 refreshList()
+            },
+            onEdit = { habit ->
+                showEditDialog(habit)
             }
+
         )
 
         binding.rvHabits.layoutManager = LinearLayoutManager(requireContext())
@@ -90,4 +94,29 @@ class HabitListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private fun showEditDialog(habit: com.example.y2s2_assignment2.domain.model.Habit) {
+        val input = android.widget.EditText(requireContext()).apply {
+            setText(habit.title)
+            setSelection(text.length)
+            hint = "Habit name"
+            inputType = android.text.InputType.TYPE_CLASS_TEXT
+        }
+
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Edit Habit")
+            .setView(input)
+            .setPositiveButton("Save") { d, _ ->
+                val newTitle = input.text.toString().trim()
+                if (newTitle.isNotEmpty() && newTitle != habit.title) {
+                    repo.updateHabitTitle(habit.id, newTitle)
+                    refreshList()
+                }
+                d.dismiss()
+            }
+            .setNegativeButton("Cancel") { d, _ -> d.dismiss() }
+            .show()
+    }
+
+
 }

@@ -14,7 +14,8 @@ class HabitAdapter(
     private var items: MutableList<Habit>,
     private val isDone: (String) -> Boolean,
     private val onToggle: (Habit) -> Unit,
-    private val onDelete: (Habit) -> Unit
+    private val onDelete: (Habit) -> Unit,
+    private val onEdit: (Habit) -> Unit
 ) : RecyclerView.Adapter<HabitAdapter.VH>() {
 
     fun submitList(newItems: MutableList<Habit>) {
@@ -26,6 +27,7 @@ class HabitAdapter(
         val cbDone: CheckBox = v.findViewById(R.id.cbDone)
         val tvTitle: TextView = v.findViewById(R.id.tvTitle)
         val btnDelete: ImageButton = v.findViewById(R.id.btnDelete)
+        val btnEdit: ImageButton = v.findViewById(R.id.btnEdit)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -40,6 +42,7 @@ class HabitAdapter(
         holder.cbDone.setOnCheckedChangeListener(null)
         holder.cbDone.isChecked = isDone(item.id)
         holder.cbDone.setOnCheckedChangeListener { _, _ -> onToggle(item) }
+        holder.btnEdit.setOnClickListener { onEdit(item) }
         holder.btnDelete.setOnClickListener { onDelete(item) }
     }
 

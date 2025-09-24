@@ -28,6 +28,16 @@ class HabitRepository(ctx: Context) {
         }
     }
 
+    fun updateHabitTitle(id: String, newTitle: String) {
+        val list = store.getHabits()
+        val idx = list.indexOfFirst { it.id == id }
+        if (idx >= 0) {
+            list[idx] = list[idx].copy(title = newTitle)
+            store.saveHabits(list)
+        }
+    }
+
+
     fun isDoneToday(id: String): Boolean {
         val done = store.getCompletedIds(DateProvider.today())
         return done.contains(id)
