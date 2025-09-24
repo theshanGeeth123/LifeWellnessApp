@@ -20,6 +20,11 @@
     <string name="mood_journal">Mood Journal</string>
     <string name="habits">Habits</string>
 
+    <string name="hydration_channel_name">Hydration Reminders</string>
+    <string name="hydration_channel_desc">Reminds you to drink water at your chosen interval</string>
+    <string name="hydration_title">Time to hydrate</string>
+    <string name="hydration_text">Drink a glass of water 💧</string>
+
 
 
 </resources>

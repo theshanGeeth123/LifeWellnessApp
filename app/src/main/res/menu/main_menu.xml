@@ -11,4 +11,9 @@
         android:id="@+id/menu_mood"
         android:title="@string/mood_journal"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_settings"
+        android:title="Settings"
+        app:showAsAction="never" />
 </menu>

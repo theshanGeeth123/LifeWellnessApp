@@ -7,19 +7,25 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.y2s2_assignment2.ui.habits.list.HabitListFragment
 import com.example.y2s2_assignment2.ui.mood.MoodListFragment
 import com.google.android.material.appbar.MaterialToolbar
+import com.example.y2s2_assignment2.ui.settings.SettingsFragment
+import com.example.y2s2_assignment2.notifications.NotificationHelper
+import com.example.y2s2_assignment2.util.ReminderScheduler
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.topAppBar)
         setSupportActionBar(toolbar)
+
+        // ensure channel + schedule at app start (respects prefs)
+        NotificationHelper.ensureChannel(this)
+        ReminderScheduler.ensureScheduled(this)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, HabitListFragment())
+                .replace(R.id.fragmentContainer, com.example.y2s2_assignment2.ui.habits.list.HabitListFragment())
                 .commit()
         }
     }
@@ -34,14 +40,21 @@ class MainActivity : AppCompatActivity() {
             R.id.menu_habits -> {
                 supportActionBar?.title = getString(R.string.habits)
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, HabitListFragment())
+                    .replace(R.id.fragmentContainer, com.example.y2s2_assignment2.ui.habits.list.HabitListFragment())
                     .commit()
                 true
             }
             R.id.menu_mood -> {
                 supportActionBar?.title = getString(R.string.mood_journal)
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, MoodListFragment())
+                    .replace(R.id.fragmentContainer, com.example.y2s2_assignment2.ui.mood.MoodListFragment())
+                    .commit()
+                true
+            }
+            R.id.menu_settings -> {
+                supportActionBar?.title = "Settings"
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, SettingsFragment())
                     .commit()
                 true
             }
