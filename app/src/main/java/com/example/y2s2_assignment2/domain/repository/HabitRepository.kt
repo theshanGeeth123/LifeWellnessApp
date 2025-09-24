@@ -5,10 +5,12 @@ import com.example.y2s2_assignment2.data.prefs.HabitStore
 import com.example.y2s2_assignment2.domain.model.Habit
 import com.example.y2s2_assignment2.domain.model.ProgressState
 import com.example.y2s2_assignment2.util.DateProvider
+import java.time.LocalDate
 
 class HabitRepository(ctx: Context) {
     private val store = HabitStore.get(ctx)
 
+    // ---------- Catalog ----------
     fun loadHabits(): MutableList<Habit> = store.getHabits()
 
     fun addHabit(title: String) {
@@ -17,18 +19,7 @@ class HabitRepository(ctx: Context) {
         store.saveHabits(list)
     }
 
-    fun deleteHabit(id: String) {
-        val updated = store.getHabits().filterNot { it.id == id }
-        store.saveHabits(updated)
-
-        val today = DateProvider.today()
-        val done = store.getCompletedIds(today)
-        if (done.remove(id)) {
-            store.setCompletedIds(today, done)
-        }
-    }
-
-    fun updateHabitTitle(id: String, newTitle: String) {
+    fun updateHabitTitle(id: String, newTitle: String) {   // <--- REQUIRED
         val list = store.getHabits()
         val idx = list.indexOfFirst { it.id == id }
         if (idx >= 0) {
@@ -37,22 +28,38 @@ class HabitRepository(ctx: Context) {
         }
     }
 
+    fun deleteHabit(id: String) {
+        val updated = store.getHabits().filterNot { it.id == id }
+        store.saveHabits(updated)
 
-    fun isDoneToday(id: String): Boolean {
-        val done = store.getCompletedIds(DateProvider.today())
+        // also clean from today's done set
+        val today = DateProvider.today()
+        val done = store.getCompletedIds(today)
+        if (done.remove(id)) {
+            store.setCompletedIds(today, done)
+        }
+    }
+
+    // ---------- Per-date completion ----------
+    fun isDone(date: LocalDate, id: String): Boolean {
+        val done = store.getCompletedIds(date)
         return done.contains(id)
     }
 
-    fun toggleDoneToday(id: String) {
-        val today = DateProvider.today()
-        val done = store.getCompletedIds(today)
+    fun toggleDone(date: LocalDate, id: String) {
+        val done = store.getCompletedIds(date)
         if (done.contains(id)) done.remove(id) else done.add(id)
-        store.setCompletedIds(today, done)
+        store.setCompletedIds(date, done)
     }
 
-    fun progressToday(): ProgressState {
+    fun progress(date: LocalDate): ProgressState {
         val total = store.getHabits().size
-        val done = store.getCompletedIds(DateProvider.today()).size
+        val done = store.getCompletedIds(date).size
         return ProgressState(done, total)
     }
+
+    // ---------- Convenience for "today" ----------
+    fun isDoneToday(id: String) = isDone(DateProvider.today(), id)
+    fun toggleDoneToday(id: String) = toggleDone(DateProvider.today(), id)
+    fun progressToday() = progress(DateProvider.today())
 }

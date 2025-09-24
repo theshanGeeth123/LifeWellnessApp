@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.y2s2_assignment2.R
 import com.example.y2s2_assignment2.databinding.FragmentHabitListBinding
 import com.example.y2s2_assignment2.domain.repository.HabitRepository
+import com.example.y2s2_assignment2.util.DateProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class HabitListFragment : Fragment() {
@@ -20,6 +21,8 @@ class HabitListFragment : Fragment() {
 
     private lateinit var repo: HabitRepository
     private lateinit var adapter: HabitAdapter
+
+    private var selectedDate = DateProvider.today()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,9 +38,9 @@ class HabitListFragment : Fragment() {
 
         adapter = HabitAdapter(
             items = repo.loadHabits(),
-            isDone = { id -> repo.isDoneToday(id) },
+            isDone = { id -> repo.isDone(selectedDate, id) },
             onToggle = { habit ->
-                repo.toggleDoneToday(habit.id)
+                repo.toggleDone(selectedDate, habit.id)
                 updateProgress()
                 adapter.notifyDataSetChanged()
             },
@@ -56,6 +59,16 @@ class HabitListFragment : Fragment() {
 
         binding.fabAdd.setOnClickListener { showAddDialog() }
 
+        binding.btnChangeDate.setOnClickListener {
+            com.example.y2s2_assignment2.util.DatePickerHelper.show(
+                requireContext(),
+                initial = selectedDate
+            ) { picked ->
+                selectedDate = picked
+                refreshList()
+            }
+        }
+
         refreshList()
     }
 
@@ -65,7 +78,7 @@ class HabitListFragment : Fragment() {
     }
 
     private fun updateProgress() {
-        val p = repo.progressToday()
+        val p = repo.progress(selectedDate)
         binding.progressBar.progress = p.percent
         binding.tvProgress.text = getString(R.string.progress_format, p.done, p.total, p.percent)
     }
@@ -96,11 +109,11 @@ class HabitListFragment : Fragment() {
     }
 
     private fun showEditDialog(habit: com.example.y2s2_assignment2.domain.model.Habit) {
-        val input = android.widget.EditText(requireContext()).apply {
+        val input = EditText(requireContext()).apply {
             setText(habit.title)
             setSelection(text.length)
             hint = "Habit name"
-            inputType = android.text.InputType.TYPE_CLASS_TEXT
+            inputType = InputType.TYPE_CLASS_TEXT
         }
 
         com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
@@ -108,7 +121,7 @@ class HabitListFragment : Fragment() {
             .setView(input)
             .setPositiveButton("Save") { d, _ ->
                 val newTitle = input.text.toString().trim()
-                if (newTitle.isNotEmpty() && newTitle != habit.title) {
+                if (newTitle.isNotBlank() && newTitle != habit.title) {
                     repo.updateHabitTitle(habit.id, newTitle)
                     refreshList()
                 }
@@ -117,6 +130,7 @@ class HabitListFragment : Fragment() {
             .setNegativeButton("Cancel") { d, _ -> d.dismiss() }
             .show()
     }
+
 
 
 }
