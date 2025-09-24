@@ -13,6 +13,14 @@
     <string name="viewing_date">Viewing: %1$s</string>
     <string name="change_date">Change Date</string>
 
+    <string name="add_mood">Add Mood</string>
+    <string name="delete">Delete</string>
+    <string name="pick_emoji">Pick an emoji</string>
+    <string name="note_optional">Note (optional)</string>
+    <string name="mood_journal">Mood Journal</string>
+    <string name="habits">Habits</string>
+
+
 
 </resources>
 
